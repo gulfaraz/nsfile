@@ -62,6 +62,11 @@ angular.module('sandboxApp', [])
             return ($scope.mapping.ns[$scope.active.ns] || []).length > 0;
         };
 
+        $scope.hasData = function () {
+            var line = "Showing data in namespace " + $scope.active.ns + " from file " + $scope.active.f;
+            return line;
+        };
+
         $http.get('/api').then(function (response) {
             $scope.status.backend = response.data.status;
         });
