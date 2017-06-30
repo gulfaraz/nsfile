@@ -1,22 +1,125 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>sandbox</title>
+        <title>Gulfaraz</title>
         <link rel="stylesheet" href="css/main.css">
     </head>
     <body ng-app="sandboxApp">
         <section ng-controller="MainCtrl">
-            <header><h2>My Playground</h2></header>
-            <aside id="status">
-                <div>
-                    <label>Frontend</label>
-                    <span ng-class="{'success' : (status.frontend==='Online')}">{{status.frontend || 'Offline'}}</span>
-                </div>
-                <div>
-                    <label>Backend</label>
-                    <span ng-class="{'success' : (status.backend==='Online')}">{{status.backend || 'Offline'}}</span>
-                </div>
-            </aside>
+            <header><h2>Namespace File Mapping</h2></header>
+            <section class="explaination">
+                <p>BLACK BORDER identifies the selected file/ns node -> there can only be one node with a BLACK BORDER per tree (which means that there can only be one selected namespace and one selected file at a given time)</p>
+                <p>YELLOW HIGHLIGHTING identifies the file/ns nodes which are linked to the selected ns/file node -> there can be zero or more nodes with YELLOW HIGHLIGHTING per tree (which means that there can be zero or more highlighted namespace and zero or more highlighted file at a given time)</p>
+            </section>
+            <section class="containers">
+                <section class="state">
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>FA</td>
+                                <td>FH</td>
+                                <td>FN</td>
+                                <td>NA</td>
+                                <td>NH</td>
+                                <td>NF</td>
+                                <td>((FA ∨ (¬FH ∨ FN)) ∨ (NA ∨ (¬NH ∨ NF)))</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{fa() ? "T" : "F"}}</td>
+                                <td>{{fh() ? "T" : "F"}}</td>
+                                <td>{{fn() ? "T" : "F"}}</td>
+                                <td>{{na() ? "T" : "F"}}</td>
+                                <td>{{nh() ? "T" : "F"}}</td>
+                                <td>{{nf() ? "T" : "F"}}</td>
+                                <td>{{ (( fa() || ( !fh() || fn() ) ) || ( na() || ( !nh() || nf() ) )) ? "T" : "F" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <section class="causes tree-container">
+                    <section class="file-tree-container">
+                        <button type="button" ng-click="active.f = null">Clear File Selection</button>
+                        <div>BUNDLE</div>
+                        <div class="node lvl1">FOLDER1</div><br/>
+                        <div class="node lvl2" ng-class="{ 'active' : (active.f === 'f1'), 'highlight' : isHighlight('f1', 'f') }" ng-click="clicked('f1', 'f')">FILE1 (NS1, NS3)</div><br/>
+                        <div class="node lvl2" ng-class="{ 'active' : (active.f === 'f2'), 'highlight' : isHighlight('f2', 'f') }" ng-click="clicked('f2', 'f')">FILE2 (NS1)</div><br/>
+                        <div class="node lvl1">FOLDER2</div><br/>
+                        <div class="node lvl2" ng-class="{ 'active' : (active.f === 'f3'), 'highlight' : isHighlight('f3', 'f') }" ng-click="clicked('f3', 'f')">FILE3 ()</div><br/>
+                        <div class="node lvl2" ng-class="{ 'active' : (active.f === 'f4'), 'highlight' : isHighlight('f4', 'f') }" ng-click="clicked('f4', 'f')">FILE4 (NS1, NS2)</div><br/>
+                        <div class="node lvl1" ng-class="{ 'active' : (active.f === 'f5'), 'highlight' : isHighlight('f5', 'f') }" ng-click="clicked('f5', 'f')">FILE5 (NS2)</div><br/>
+                    </section>
+                    <section class="namespace-tree-container">
+                        <button type="button" ng-click="active.ns = null">Clear NS Selection</button>
+                        <div class="node" ng-class="{ 'active' : (active.ns === 'ns1'), 'highlight' : isHighlight('ns1', 'ns') }" ng-click="clicked('ns1', 'ns')">Namespace 1 (F1, F2, F4)</div><br/>
+                        <div class="node" ng-class="{ 'active' : (active.ns === 'ns2'), 'highlight' : isHighlight('ns2', 'ns') }" ng-click="clicked('ns2', 'ns')">Namespace 2 (F4, F5)</div><br/>
+                        <div class="node" ng-class="{ 'active' : (active.ns === 'ns3'), 'highlight' : isHighlight('ns3', 'ns') }" ng-click="clicked('ns3', 'ns')">Namespace 3 (F1)</div><br/>
+                        <div class="node" ng-class="{ 'active' : (active.ns === 'ns4'), 'highlight' : isHighlight('ns4', 'ns') }" ng-click="clicked('ns4', 'ns')">Namespace 4</div>
+                    </section>
+                </section>
+                <section class="effects">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>PAGE</th>
+                                <th>BEHAVIOR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TRANSFORM</td>
+                                <td>
+                                    <div>{{active.ns ? ( active.f ? ( hasData() ) : ( "Shows all data in namespace " + active.ns ) ) : "No NS Selected"}}</div>
+                                    <div>{{ active.f ? "Shows selected file content in file viewer" : "File viewer prompts user to select file" }}</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>BUNDLE MANAGER</td>
+                                <td>
+                                    <div>No dependency on ns selection</div>
+                                    <div>No dependency on file selection</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>FILE PROPERTIES</td>
+                                <td>
+                                    <div>No dependency on ns selection</div>
+                                    <div>{{active.f ? "Allows editing of file properties for file " + active.f : "Redirects to bundle manager page" }}</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ZIP PROPERTIES</td>
+                                <td>
+                                    <div>No dependency on ns selection</div>
+                                    <div>{{active.f ? "Allows changing of uncompression level of project" : "Redirects to bundle manager page" }}</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SPL MANAGER</td>
+                                <td>
+                                    <div>{{ active.ns ? "Shows ns properties for editing in form" : "allows user to add a new namespace using empty form" }}</div>
+                                    <div>{{ active.f ? "Shows selected file content in file viewer" : "File viewer prompts user to select file" }}</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SPL VERSION</td>
+                                <td>
+                                    <div>No dependency on ns selection</div>
+                                    <div>{{ active.f ? "Shows selected file content in file viewer" : "File viewer prompts user to select file" }}</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SPL EDITOR</td>
+                                <td>
+                                    <div>No dependency on ns selection</div>
+                                    <div>{{ active.f ? "Shows selected file content in file viewer" : "File viewer prompts user to select file" }}</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </section>
         </section>
         <script src="js/main.js"></script>
     </body>
